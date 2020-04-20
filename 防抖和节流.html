@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>防抖节流</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="main"></div>
+        <div id="buts">
+            <button onclick="shakeChangeTimeOut()">防抖延时执行</button>
+            <button onclick="shakeChangeImmediate()">防抖立即执行</button>
+            <button onclick="throChangeTimeOut()">节流延时执行</button>
+            <button onclick="throChangeImmediate()">节流立即执行</button>
+            <button onclick="throChange()">节流结合版</button>
+        </div>
+        
+    </body>
+</html>
+
+<style>
+    #main{
+        width: 200px;
+        height: 200px;
+        float: left;
+        background-color: rgb(145, 35, 67);
+    }
+    #buts{
+        width: 100px;
+        height: 200px;
+        padding: 0 0 0 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+</style>
+
+<script>
+    var mainDiv = document.getElementById("main");
+    
+    //获取一个0~255之间的整数
+    function getNum(){
+        var num = Math.random();
+        return parseInt(num * 255);
+    }
+
+    function changeBackground(){
+        mainDiv.style.cssText = "background-color : rgb(" + getNum() + "," 
+                                                        + getNum() + "," 
+                                                        + getNum() +")";
+    }
+    
+    //防抖实现，规定时间内只能改变一次背景颜色
+    function shakeChangeTimeOut(){
+        changeColor(2000, false);
+    } 
+    //防抖实现，规定时间内只能改变一次背景颜色
+    function shakeChangeImmediate(){
+        changeColor(2000, true); //不同按钮会相互影响
+    }
+
+    //防抖实现，规定时间执行一次
+    //闭包+立即执行函数 获取定时器执行函数
+    var changeColor = (function (){
+        let timer = null; //初始化时定义timer
+        return function(deley = 5000, isImmediate){
+            if(timer) clearTimeout(timer); //只要存在就清除定时器 
+            if(isImmediate){ //如果需要立即执行
+                if(!timer) changeBackground(); //定时器不存在就执行,否则就要重新设置定时器
+                timer = setTimeout(() => {
+                    timer = null;//执行之后 定时清空定时器，还能防止内存泄漏
+                }, deley)
+            }else{  //不需要立即执行
+                timer = setTimeout(() => {
+                    changeBackground()
+                },deley);  //重新设置定时器
+            }
+            
+        }
+    }())
+
+    
+    //节流立即执行版
+    function throChangeImmediate(){
+        thChangeColorIm(2000);
+    }
+    //节流延时执行版
+    function throChangeTimeOut(){
+        thChangeColorTimeOut(2000);
+    }
+    //节流结合版
+    function throChange(){
+        thChangeColor(2000);
+    }
+
+    //节流实现,规定时间内触发没有任何影响，正常定时执行
+    //非立即执行版  定时器实现
+    var thChangeColorTimeOut = (function(){
+        let timer = null;
+        return function(deley = 5000){
+            if(!timer){
+                timer = setTimeout(()=>{
+                    changeBackground();
+                    timer = null;
+                }, deley)
+            }
+        }
+    }())
+
+    //立即执行版,最后一次触发若在规定时间内则不会执行
+    var thChangeColorIm = (function(){
+        var deleyTime = 0;//记录上一次执行时刻
+        return function(deley = 5000){
+            var now = Date.now();
+            if(now - deleyTime >= deley){
+                changeBackground();
+                deleyTime = now;
+            }
+        }
+    }())
+
+    //节流结合版，立即执行，并且最后一次也会执行
+    var thChangeColor = (function(){
+        var deleyTime = 0;
+        var timer = null;
+        return function(deley = 5000){
+            var now = Date.now();
+            var remaining = deley - (now - deleyTime);//距离规定时间还剩多久
+            clearTimeout(timer);//先清除定时器
+            if(remaining <= 0){//如果已经过了规定时间，就立刻执行
+                changeBackground();
+                deleyTime = now;
+            }else{ //没过规定时间，就设置定时器，延时执行。这里只有最后一次触发才会执行
+                timer = setTimeout(function(){
+                    changeBackground();
+                },deley)
+            }
+
+
+        }
+    }())
+
+
+
+</script>

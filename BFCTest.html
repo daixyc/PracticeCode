@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>BFC测试</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        
+        <div class="container" id="container">
+            <p class="left">我是左侧浮动元素</p>
+        </div>
+        <div class="container" id="container">
+            <p class="main">我是一个没有浮动的元素，也没有触发BFC</p>
+        </div>
+    </body>
+</html>
+
+
+<style>
+    .container{
+        overflow: hidden;
+    }
+    .container .left{
+        width: 100px;
+        height: 100px;
+        margin: 20px;
+        background-color: coral;
+    }
+    .container .main{
+        height: 100px;
+        width: 200px;
+        margin: 20px;
+        background-color: cornflowerblue;
+    }
+</style>
+<script>
+    //类数组
+    var obj = {
+        "0" : 'a',
+        "1" : 'b',
+        "2" : 'c',
+        "length" : 3,
+        "push" : Array.prototype.push,
+        "splice" : Array.prototype.splice
+    }
+    // var div = document.getElementById("container");
+    // div.style.cssText = "background-color : red";
+    var strTest = ' 我   是 呵呵     就  是  ';
+    //去掉字符串首尾的空格，并将字符串中的多空格替换成单空格
+    function test(str){
+        str = str.trim();
+        str = str.replace("  ", " ");
+        if(str.indexOf("  ") != -1)
+            return test(str);
+        else
+            return str;
+    }
+
+    //查找字符串中第一个未重复出现的字符
+    function getOneWord(str){
+        var strLen = str.length;
+        var obj = {};
+        for(var i = 0; i < strLen; i++){
+            var aa = obj[str[i]];
+            obj[str[i]] = obj[str[i]] === undefined ? 1 : obj[str[i]] + 1;
+        }
+        for(var index in obj){
+            if(obj[index] == 1){
+                return index;
+            }
+        }
+    }
+
+    //返回类型
+    function myTypeOf(str){
+        var type = typeof(str);
+        var newType = Object.prototype.toString.call(str);
+        var obj = {
+            "[object Object]" : "object -- Object",
+            "[object Array]" : "Array -- Object",
+            "[object Number]" : "Number -- Object"
+        }
+        if(str === null){
+            return null;
+        }else{
+            return type == "object" ? obj[newType] : type;
+        }
+    }
+
+    var targetObj = {};
+    var originObj = {
+        name : "轩尘",
+        age : 24,
+        array : [1, 2, 3],
+        object : {
+            name : "qiao",
+            age : 25
+        }
+    }
+    //实现深度克隆，即引用类型的改变互不影响
+    function deepClone(Target, Origin){
+        if(Origin === null || Origin === undefined){
+            Target = {};
+        }
+        for(var tKey in Origin){
+            if(typeof(Origin[tKey]) == 'object'){
+                var type = Object.prototype.toString.call(Origin[tKey]);
+                if(type == '[object Object]'){
+                    Target[tKey] = {};
+                }else if(type == '[object Array]'){
+                    Target[tKey] = [];
+                }
+                deepClone(Target[tKey], Origin[tKey]);
+            }
+            else{
+                Target[tKey] = Origin[tKey];
+            }
+        }
+        return Target;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>邮箱输入框练习</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="mailFun" class="mailFun">
+            <input type="text" id="mailInput" class="mailInput">
+            <ul id="prompt" class="prompt"></ul>
+        </div>
+    </body>
+</html>
+
+
+<script>
+    var mailInput = document.getElementById("mailInput");
+    var mailUl = document.getElementById("prompt");
+    var mailPromptLi = document.getElementsByTagName("li");
+    var lstPrompt = ["@qq.com", "@163.com", "@126.com", "@outlook.com"]
+    //添加输入框监听事件
+    mailInput.addEventListener("input",function(){
+        if(getInput().length == 0){
+            setPromptNone();
+            mailUl.innerText = "";
+        }
+        else{
+            addLstLi();
+        }
+    })
+    mailInput.addEventListener("keyup",function(event){
+        var event = event || window.event;
+        eventFunction(event);
+    })
+    //设置上下按键方法，立即执行函数和闭包
+    var eventFunction = (function (event){
+        var liIndex = -1;
+        function upAndDown(event){
+            if(event.keyCode == 40){ //下方向键
+                if(liIndex != -1){
+                    mailPromptLi[liIndex].classList.remove("active");
+                }
+                if(liIndex == mailPromptLi.length - 1){
+                    liIndex = 0;
+                }
+                else{
+                    liIndex++;  
+                }
+                mailPromptLi[liIndex].setAttribute("class", "active");
+                mailInput.value = mailPromptLi[liIndex].innerText;
+            }
+            else if(event.keyCode == 38){ //上方向键
+                if(liIndex != 0){
+                    mailPromptLi[liIndex--].classList.remove("active");
+                }
+                mailPromptLi[liIndex].setAttribute("class", "active");
+                mailInput.value = mailPromptLi[liIndex].innerText;
+            }
+        }
+        return upAndDown;
+    }());
+    // var eventFunction = setKeyboardEvent(event);
+    //获取用户输入
+    function getInput(){
+        //replace只能替换第一个  trim 只能删除首尾的空格
+        var inputValue = mailInput.value.split(' ').join('');
+        // var result = "";
+        // if(inputValue.indexOf("@") != -1){
+        //     result = inputValue.substring(0,inputValue.indexOf("@"));
+        // }
+        // else{
+        //     result = inputValue;
+        // }
+        // return result;
+        return inputValue;
+    }
+    //生成提示框中的提示内容
+    function setPrompt(){
+        var str = this.getInput();
+        var resList = [];
+        if(str.indexOf("@") == -1){
+            //没有输入 @
+            resList = lstPrompt.map(p=> str + p);
+        }
+        else{
+            //输入@
+            //@及之后的字符
+            var afterValue = str.substring(str.indexOf("@"),str.length);
+            //@之前的字符
+            var beforeValue = str.substring(0, str.indexOf("@")).trim();
+            //包含@及之后的字符的后缀集合
+            var newlstPrompt = lstPrompt.filter(p => p.indexOf(afterValue) != -1);
+            if(newlstPrompt.length == 0){
+                newlstPrompt = lstPrompt;
+            }
+            //最后的集合是输入的@之前的字符 拼接@及之后的字符   集合
+            resList = newlstPrompt.map(p => beforeValue + p);
+        }
+        return resList;
+    }
+    //动态添加提示li
+    function addLstLi(){
+        setPromptShow();
+        mailUl.innerText = "";
+        var list  = setPrompt();
+        for(var i = 0; i < list.length; i++){
+            var li = document.createElement("li");
+            li.innerText = list[i];
+            mailUl.appendChild(li);
+        }
+        getliIndex(mailPromptLi);//生成提示列表后直接添加点击事件
+    }
+    //设置提示框显示
+    function setPromptShow(){
+        mailUl.style.visibility = "visible";
+    }
+    //设置提示框隐藏
+    function setPromptNone(){
+        mailUl.style.visibility = "hidden";
+    }
+    //为提示li列表添加点击事件
+    function getliIndex(lstLi){
+        for(var i = 0;i < lstLi.length; i++){
+            (function(j){
+                lstLi[j].onclick = function(){
+                    mailInput.value = lstLi[j].innerText;
+                    clearClassName();
+                }
+            })(i)
+            
+        }
+    }
+    //清除所有列表中的因按键产生的class
+    function clearClassName(){
+        for(var i = 0; i < mailPromptLi.length; i++){
+            mailPromptLi[i].classList.remove("active");
+        }
+    }
+</script>
+
+<style>
+    .mailFun{
+        width: 200px;
+    }
+    .mailFun .mailInput{
+        height: 30px;
+        font-size: 16px;
+    }
+    .mailFun .prompt{
+        padding: 0;
+        margin: 0;
+        border: #000 solid 1px;
+        visibility: hidden;
+    }
+    .mailFun .prompt li{
+        list-style: none;
+        height: 30px;
+        line-height: 30px;
+    }
+    .mailFun .prompt li.active{
+        background-color: #ffc5cf;
+    }
+    .mailFun .prompt li:hover{
+        background-color: #ffc5cf;
+        cursor: pointer;
+    }
+</style>
