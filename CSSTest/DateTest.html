@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>时间练习</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <p id="dateValue"></p>
+
+        <select id="year-select"></select>年
+        <select id="month-select"></select>月
+        <select id="day-select"></select>日 
+        <select id="hour-select"></select>:
+        <select id="minute-select"></select>:
+        <select id="second-select"></select>
+        <p id="result-wrapper"></p>
+    </body>
+</html>
+
+<script>
+    var yearSelect = document.getElementById("year-select");
+    var monthSelect = document.getElementById("month-select");
+    var daySelect = document.getElementById("day-select");
+    var hourSelect = document.getElementById("hour-select");
+    var minuteSelect = document.getElementById("minute-select");
+    var secondSelect = document.getElementById("second-select");
+    var resultP = document.getElementById("result-wrapper");
+
+    //#region 计算时间差
+    //先初始化
+    function onLoad(){
+        var date = new Date();
+        //年份默认前后十年
+        setOptions(yearSelect, 2015, 2025)
+        //月份就是12个月
+        setOptions(monthSelect, 1, 12);
+        //日期默认设置为31天
+        setOptions(daySelect, 1, 31);
+        //小时设置为24小时制
+        setOptions(hourSelect, 0, 23);
+        //分钟和秒都是60
+        setOptions(minuteSelect, 0, 59);
+        setOptions(secondSelect, 0, 59);
+    }
+    //初始化选择框中的可选项
+    function setOptions(el, m, n){
+        el.options.length = 0;
+        for(var i = m; i <= n; i++){
+            el.options.add(new Option(i, i));
+        }
+    }
+    //为年份和月份设置框 添加联动
+    yearSelect.addEventListener("change",setDay);
+    monthSelect.addEventListener("change",setDay);
+    function setDay(){
+        //设置联动，不同月份天数不同，还要考虑 是否是闰年
+        if(monthSelect.value == 2){
+            if(IsRunYear(yearSelect.value)){
+                setOptions(daySelect, 1, 29);
+            }
+            else{
+                setOptions(daySelect, 1, 28);
+            }
+        }
+        else if(monthSelect.value == 4 || monthSelect.value == 6 || monthSelect.value == 9 || monthSelect.value == 11 ){
+            setOptions(daySelect, 1, 30);
+        }
+    }
+    //判断是否是闰年
+    function IsRunYear(year){
+        var yearClass = false;
+        if(year % 100 == 0){
+            if(year % 400 == 0){
+                yearClass = true;
+            }
+        }
+        else{
+            if(year % 4 == 0){
+                yearClass = true;
+            }
+        }
+        return yearClass;
+    }
+    //计算差值并更新显示的值
+    function updateTime(){
+        var selectTime = new Date(yearSelect.value + '-' + monthSelect.value + '-' + daySelect.value + '-' 
+            + hourSelect.value + ':' + minuteSelect.value + ':' + secondSelect.value);
+        var nowTime = new Date();
+        var diffSec = (selectTime - nowTime) / 1000;//相差的秒数
+        var diff = Math.abs(diffSec);
+        var d = parseInt(diff / (24 * 3600)) //天数
+        var h = parseInt((diff - d * 24 * 3600) / 3600);// 小时数
+        var m = parseInt((diff - d * 24 * 3600 - h * 3600) / 60);//分钟数
+        var s = parseInt(diff - d * 24 *3600 - h * 3600 - m * 60);// 秒数
+        var timeStr = d + "天" + h + "小时" + m + "分钟" + s + "秒";
+        if(diffSec < 0){
+            resultP.innerText = "现在距离 " + this.getNewDate(selectTime) + "已经过去" + timeStr;
+        }
+        else{
+            resultP.innerText = "现在距离 " + this.getNewDate(selectTime) + "还有" + timeStr;
+        }
+    }
+    window.onload = function(){
+        this.onLoad();
+        var selects = document.querySelectorAll("select");
+        for (var i = 0; i < selects.length; i++) {
+            selects[i].addEventListener("change", function () {
+                if (timer) {
+                    clearInterval(timer)
+                    timer = null;
+                } else {
+                    var timer = setInterval(updateTime
+                        , 1000)
+                }
+            })
+        }
+    }
+    //#endregion
+
+
+    //#region 实时显示当前时间
+    setInterval(function(){
+        var newDate = new Date();
+        document.getElementById("dateValue").innerText = getNewDate(newDate);
+    },1000)
+
+    function getNewDate(date){
+        var str = getYear(date) + "年  " + getMonth(date) + "月  " + getDay(date) + "日  "
+                    + getWeek(date) + "  " + getTime(date); 
+        return str;
+    }
+
+    function getYear(date){
+        return date.getFullYear();
+    }
+
+    function getMonth(date){
+        var month = date.getMonth() + 1;
+        return month<10 ? '0' + month : month;
+    }
+
+    function getDay(date){
+        return date.getDate()<10 ? '0' + date.getDate() : date.getDate();
+    }
+
+    function getWeek(date){
+        var weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        return weekList[date.getDay()];
+    }
+
+    function getTime(date){
+        var str = "";
+        var h = date.getHours()<10 ? '0' + date.getHours() : date.getHours();
+        var m = date.getMinutes()<10 ? '0' + date.getMinutes() : date.getMinutes();
+        var s = date.getSeconds()<10 ? '0' + date.getSeconds() : date.getSeconds();
+        str = h + ":" + m + ":" + s;
+        return str;
+    }
+    //#endregion
+</script>
