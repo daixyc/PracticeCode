@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>选择排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+
+<script>
+
+    ///选择排序过程=> i指针依次选中index,j指针后移，找到最小的数，然后将i指针的值和最小值换,这里开始的值是定的
+    ///时间复杂度=> O(n^2)
+    function MySort() {
+        let minIndex;
+        for(let i = 0; i < numArr.length - 1; i++) {
+            minIndex = i;
+            for(let j = i + 1; j < numArr.length; j++) {
+                if(numArr[minIndex] > numArr[j]) {
+                    minIndex = j;
+                }
+            }
+
+            if(numArr[i] > numArr[minIndex]){
+                //这里的判断主要作用是：如果minIndex === i,则不需要替换
+                //两值相等的情况在上续操作中已经可以排除
+                let temp = numArr[i];
+                numArr[i] = numArr[minIndex];
+                numArr[minIndex] = temp;
+            }
+        }
+    }
+
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort();
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 3000);
+</script>

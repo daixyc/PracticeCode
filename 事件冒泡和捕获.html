@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间冒泡和事件捕获</title>
+</head>
+<body>
+    <div id="parent">
+        <div id="child">
+            这里是事件冒泡和捕获现场！
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var child = document.getElementById('child')
+    var parent = document.getElementById('parent')
+    // child.onclick() = function(){
+    //     console.log("child");
+    // }
+    // parent.onclick = function(){
+    //     console.log("parent");
+        
+    // }
+    
+
+    //事件冒泡，先执行最明确的节点，层层向上
+    // child.addEventListener('click', function(){
+    //     console.log('child');
+    // }, false)
+    // parent.addEventListener('click', function(){
+    //     console.log('parent');
+    // }, false)
+    // document.body.addEventListener('click', function(){
+    //     console.log('body');
+    // }, false)
+    // document.addEventListener('click', function(){
+    //     console.log('document');
+    // }, false)
+
+
+    //事件捕获，最外层先捕获
+    child.addEventListener('click', function(){
+        console.log('child');
+    }, true)
+    parent.addEventListener('click', function(){
+        console.log('parent');
+    }, true)
+    document.body.addEventListener('click', function(){
+        console.log('body');
+    }, true)
+    document.addEventListener('click', function(){
+        console.log('document');
+    }, true)
+</script>

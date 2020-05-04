@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Promise-test</title>
+    </head>
+    <body>
+        <button onclick="testPromise()">点击</button>
+        <div class="log"></div>
+    </body>
+</html>
+
+
+<script>
+    function test() {
+        let p1 = new Promise(function(resolve, reject) {
+            // console.log('P1 resolve');
+            setTimeout(resolve, 500, 'p1 resolve');
+        })
+
+        let p2 = new Promise(function(resolve, reject) {
+            // console.log('P2 resolve');
+            setTimeout(reject, 100, 'p2 reject');
+        })
+
+        // Promise.all([p1, p2]).then(function(value) {
+        //     console.log(value);
+        // })
+
+        Promise.race([p1, p2]).then(function(value) {
+            console.log('race resolve');//这里不会执行，因为是先失败，返回的是失败的结果
+        }, function(reason) {
+            console.log('race reject'); //这里执行
+        })
+    }
+
+    // test();
+
+    function test2() {
+        Promise.resolve('foo').then(function(string) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    string += 'bar';
+                    resolve(string);
+                }, 1);
+            });
+        }).then(function(string) {
+            setTimeout(() => {
+                string += 'baz';
+                console.log(string);
+            }, 1);
+            return string;
+        }).then(function(string) {
+            let result = 'this is my test code';
+            console.log(result);
+            console.log(string);
+            
+        })
+    }
+
+    // test2();
+
+
+    var promiseCount = 0;
+    function testPromise() {
+        let thisPromiseCount = ++promiseCount;
+        let log = document.getElementsByClassName("log")[0];
+        log.insertAdjacentHTML('beforeend', thisPromiseCount + ') 开始（<small>同步代码开始</small>）<br/>');
+
+        let p1 = new Promise((resolve, reject) => {
+            log.insertAdjacentHTML('beforeend', thisPromiseCount + ') 开始（<small>异步代码开始</small>）<br/>');
+            //创建一个异步调用
+            window.setTimeout(function() {
+                //填充Promise
+                resolve(thisPromiseCount);
+            }, Math.random() * 2000 + 1000);//1到3秒不等
+        });
+
+        p1.then(
+            //记录填充值
+            function(val) {
+                log.insertAdjacentHTML('beforeend', val + 'Promise已填充完毕，（<small>异步代码结束</small>）<br/>');
+            }
+        )
+        .catch(
+            //记录失败返回
+            (reason) => {
+                console.log('处理失败的Promise（'+ reason +'）');
+            }
+        );
+
+        log.insertAdjacentHTML('beforeend', thisPromiseCount + ') Promise made (<small>同步代码结束</small>)<br/>')
+    }
+
+</script>

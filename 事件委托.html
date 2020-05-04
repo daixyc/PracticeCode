@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>01-test</title>
+    </head>
+    <body>
+        <button>点击</button>
+        <ol></ol>
+    </body>
+</html>
+
+
+<script>
+    var but = document.getElementsByTagName("button")[0];
+    var ol = document.getElementsByTagName("ol")[0];
+
+    but.addEventListener("click",function(){
+        let li = document.createElement("li");
+        let span = document.createElement("span");
+        let number = parseInt(Math.random() * 100, 10);
+        span.textContent = number;
+        // li.textContent = number;
+        li.appendChild(span);
+        ol.appendChild(li);
+        // li.addEventListener("click", function(){
+        //     li.remove();
+        // })
+    })
+
+    ol.addEventListener('click', function(e){
+        let element = e.target;
+        // if(element.tagName === 'LI'){
+        //     element.remove()
+        // }
+        while(element.tagName !== 'LI'){
+            //如果不是li
+            if(element === ol){
+                //如果是当前ol节点，则直接返回null
+                element = null;
+                break;
+            } else {
+                element = element.parentNode;
+            }
+        }
+        element && element.remove();
+    })
+</script>

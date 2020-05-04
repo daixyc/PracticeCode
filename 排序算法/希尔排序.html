@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>希尔排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+<script>
+
+    ///希尔排序过程 => 将待排序的数组按增量递减进行分组，然后将不同组的对应元素进行比较
+    /// 增量折半，继续以上步骤
+    /// 时间复杂度 最坏：O(n^2) 
+    function MySort() {
+        for(let gap = Math.floor(numArr.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
+            for(let i = gap; i < numArr.length; i++) {
+                var j = i; 
+                var current = numArr[i];
+                //如果存在组间隔，并且后组元素比前组对应元素小，则交换
+                while(j - gap >= 0 && current < numArr[j - gap]) {
+                    numArr[j] = numArr[j - gap];
+                    //交换完成后，将基准值换为前组对应元素，与更前组比较
+                    j = j - gap;
+                }
+                numArr[j] = current;
+            }
+        }
+    }
+
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort();
+        result.innerText = numArr.join('->')
+        console.log(aa);
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 3000);
+</script>

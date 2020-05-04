@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>跨域_孙子iframe</title>
+    </head>
+    <body>
+
+    </body>
+</html>
+<script>
+    //#region  三、location.hash + iframe 实现跨域
+    //当前页： http://www.domain.com/跨域_grandSon.html
+
+    // 监听传过来的hash是否变化，变化就调a页面的回调函数
+    window.onhashchange = function() {
+        window.parent.parent.onCallBack('hello ' + location.hash.replace('#user=', ''));
+    }
+    //#endregion
+</script>

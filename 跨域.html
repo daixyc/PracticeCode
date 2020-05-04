@@ -15,24 +15,148 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
-        <h3>跨域策略是一大块很重要的内容，还在学习！</h3>
+        <h3>跨域策略是一大块很重要的内容，这里只是学习整理了一部分，还在继续学习！</h3>
+        <!-- 二、document.domain + iframe 实现跨域 -->
+        <iframe id="iframe" src="http://child.domain.com/跨域_child.html"></iframe>
+        <!-- 三、location.hash + iframe 实现跨域 -->
+        <iframe id="hash_iframe" src="http://www.domain2.com/跨域_child.html"></iframe>
+        <!-- 四、postMessage()实现跨域 -->
+        <iframe id="postMessage_iframe"
+            src="http://www.domain2.com/跨域_child.html"></iframe>
     </body>
 </html>
 
 
 <script>
 
-    function jsonp(){
-        console.log("111");
+    //#region 一、jsonp方式跨域，通过script标签的可跨域特性。
+    // 缺点：只能实现get一种请求
+    // 异步
+    // 回调函数
+    function jsonp(argument){
+        //参数是后台接口返回的
+        console.log(JSON.stringify(argument));
     }
 
+    //#region 1、原生JS
     var script = document.createElement('script');
     script.type = 'text/javascript';
 
     // 传参一个回调函数名给后端，方便后端返回时执行这个在前端定义的回调函数
     script.src = 'http://www.domain2.com:8080/login?user=admin&callback=jsonp';
     document.head.appendChild(script);
+    //#endregion
+
+    //#region 2、jquery ajax
+    $.ajax({
+        url: "http://www.domain2.com:8080/login",
+        type: 'get',
+        data: {
+            user: 'admin'
+        },//参数
+        dataType: 'jsonp',//请求方式
+        jsonpCallback: 'jsonp',//回调函数名
+    })
+    //#endregion
+
+    //#region 3、vue的jsonp
+    this.$http.jsonp('http://www.domain2.com:8080/login', {
+        params: {
+            user: 'admin'
+        },// 参数
+        jsonp: 'jsonp'//回调函数名
+    }).then((res) => {
+       console.log(res);
+    }).catch((err) => {
+        console.log(err);
+    });
+    //#endregion
+
+    //#endregion
+
+    //#region 二、 document.domain + iframe跨域
+    // 限制：只限主域相同但是子域不同的情况
+    // 实现：通过JS强制设置document.domain为基础主域
+    // 当前页（父级）：http://www.domain.com/跨域.html
+    document.domain = 'domain.com';
+    var user = 'admin';
+
+    //#endregion
+
+    //#region 三、location.hash + iframe 实现跨域
+    // a、c同域，与b不同域，通过传递hash，a->b->c，然后c可以通过parent.parent取到a
+    // 当前页：http://www.domain1.com/跨域.html
+    var iframe = document.getElementById('hash_iframe');
+    setTimeout(() => {
+        iframe.src = iframe.src + '#user=admin'
+    }, 3000);
+    // 这里留一个回调函数，供孙子级调用
+    function onCallBack(res) {
+        console.log('data from c.html-->' + res);
+        
+    }
+    //#endregion
+
+    //#region 四、postMessage() 实现跨域
+    // postMessage(data, origin),data本来是任意类型，但是有些浏览器只支持字符串，所以data最好json转一下
+    // origin : 协议+主机+端口号，可以设置为'*'，表示可以传递到任意窗口，如果要指定和当前页面同源的话，设置为'/'
+    // 当前页：http://www.domain1.com/跨域.html
+    var iframe = document.getElementById('postMessage_iframe');
+    window.onload = function() {
+        var data = {
+            user: 'admin'
+        };
+        //向iframe2传送数据
+        iframe.contentWindow.postMessage(JSON.stringify(data), 'http://www.domain2.com')
+        //接收iframe2 返回的饿数据
+        window.addEventListener('message', function(e) {
+            console.log('data from domain2-->', e.data);
+        }, false);
+    }
+    //#endregion
+
+    //#region 五、CORS设置跨域（跨域资源共享）
+    // 一般情况下 只需要后端设置 Access-Control-Allow-Origin 即可，但是如果要带cookie请求，则前后端都要设置
+    // 以下仅记录前端设置代码
+    //#region 1、原生JS--> ajax
+    var xhr = window.XDomainRequest || new XMLHttpRequest();
+    //设置是否带cookie 
+    xhr.withCredentials = true;
+    xhr.open('post', 'http://www.domain2.com:8080/login', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send('user=admin');
+
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState == 4 && xhr.status == 200) {
+            console.log(xhr.responseText);
+        }
+    }
+    //#endregion
+
+    //#region 2、JQuery ajax
+    $.ajax({
+        url: 'http://www.domain2.com:8080/login',
+        data: {
+            user: 'admin'
+        },
+        type: 'post',
+        xheFields: {
+            withCredentials: true// 是否带cookie
+        },
+        crossDomain: true,//请求头中包含跨域的额外信息，但是不会含cookie
+    })
+    //#endregion
+
+    //#region 3、vue设置
+    //#region （1）、axios设置
+    axios.defaults.withCredentials = true;
+    //#endregion
+    //#region (2)、vue-resource设置
+    Vue.http.options.credentials = true;
+    //#endregion
+    //#endregion
+
+    //#endregion
 
 
 

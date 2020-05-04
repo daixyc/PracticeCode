@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>插入排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+
+<script>
+
+    ///插入排序过程=> 从首位开始向后查找，依次选中元素，与其前边的元素比较，如果比其大，就将其前元素向后移一位
+    /// 如果找到比其小的元素，就将其插入该小元素的后边
+    ///时间复杂度=> O(n^2)
+    function MySort() {
+        let preIndex, current;
+        for(let i = 1; i < numArr.length; i++) {
+            preIndex = i - 1;
+            current = numArr[i];
+            while(preIndex >= 0 && numArr[preIndex] > current) {
+                numArr[preIndex + 1] = numArr[preIndex];
+                preIndex -- ; 
+            }
+            numArr[preIndex + 1] = current;
+        }
+    }
+
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort();
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 3000);
+</script>

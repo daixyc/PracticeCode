@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>跨域_子iframe实现</title>
+    </head>
+    <body>
+        <!-- 三、location.hash + iframe 跨域 -->
+        <iframe id="iframe" src="http://www.domain1.com/跨域_grandSon.html"></iframe>
+        <!-- 四、postMessage() 实现跨域 -->
+        <iframe src="" frameborder="0"></iframe>
+    </body>
+</html>
+
+<script>
+    //#region 二、 document.domain + iframe 实现跨域
+    // 子页面：http://child.domain.com/跨域_child.html
+    document.domain = 'domain.com';
+    console.log('get js data from parent-->' + window.parent.user);
+    //#endregion
+
+    //#region 三、location.hash + iframe 实现跨域
+    // 当前页： http://www.domain2.com/跨域_child.html
+    var iframe = document.getElementById('iframe');
+    // 监听A传来的hash值，然后传给C
+    window.onhashchange = function() {
+        iframe.src = iframe.src + location.hash;
+    }
+    //#endregion
+
+    //#region 四、postMessage() 实现跨域
+    //当前页：http://www.domain2.com/跨域_child.html
+    window.addEventListener('message', function(e) {
+        console.log('data from domain1-->', e.data);
+        
+        var data = JSON.parse(e.data);
+        if(data) {
+            data.number = 10;
+        }
+
+        window.parent.postMessage(JSON.stringify(data), 'http://www.domain1.com')
+    }, false)
+    //#endregion
+    
+</script>
