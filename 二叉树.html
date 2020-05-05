@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>排序二叉树构建</title>
+    </head>
+    <body>
+        <h6>排序二叉树：左子节点值 &lt; 根节点值 &lt; 右子节点值</h6>
+    </body>
+</html>
+
+<script>
+    //二叉树构造函数
+    function BinaryTree() {
+        //节点构造函数
+        var Node = function(key) {
+            this.key = key;
+            this.left = null;
+            this.right = null;
+        }
+
+        //根节点
+        var root = null;
+
+        //插入root的子节点
+        var insertNode = function(parentNode, childNode) {
+            if(parentNode.key < childNode.key) {
+                //这里的child是右子节点
+                if(!parentNode.right) {
+                    //如果右子节点不存在，就赋值
+                    parentNode.right = childNode;
+                } else {
+                    //存在，就递归
+                    insertNode(parentNode.right, childNode);
+                }
+            } else {
+                // 这时候child是左子节点
+                if(!parentNode.left) {
+                    //左子节点不存在，赋值
+                    parentNode.left = childNode;
+                } else {
+                    // 存在，继续递归
+                    insertNode(parentNode.left, childNode);
+                }
+            }
+        }
+        //获取树结构
+        this.getRoot = function() {
+            return root;
+        }
+
+        // 节点插入方法
+        this.insert = function(key) {
+            // 创建节点
+            var thisNode = new Node(key);
+
+            // 根节点赋值
+            if(!root) {
+                root = thisNode;
+            } else {
+                insertNode(root, thisNode);
+            }
+        }
+    }
+
+
+    // 例子论证
+    var arr = [5, 8, 15, 16, 88, 66, 32, 48, 60, 99];
+    var binaryTree = new BinaryTree();
+    arr.forEach(item => {
+        binaryTree.insert(item);
+    })
+    console.log(binaryTree.getRoot());
+    
+</script>

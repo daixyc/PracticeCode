@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>原生JS实现div移动效果</title>
+        <style>
+        .move_div {
+            width: 50px;
+            height: 50px;
+            background-color: aqua;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="move_div"></div>
+    </body>
+</html>
+
+<script>
+    /* 原生JS实现运动效果，5秒之后结束，速度递减 */
+    var ele = document.getElementsByClassName('move_div')[0];
+
+    //实现一个window方法，可以传参，然后让参数中的element移动
+    function move(ele) {
+        let top = 0;
+        let speed = 100;
+        let timer = null;
+        let startTime = Date.now();//起始时间
+        timer = setInterval(function() {
+            if(Date.now() - startTime >= 5000) {
+                console.log(Date.now() - startTime); // 打印时间间隔
+                clearInterval(timer); //5秒后停止运动
+            } 
+            speed -= speed/7;//每次速度都减小
+            top += speed;//位置改变实现移动效果
+            ele.style.marginLeft = Number(top) + 'px';
+        }, 200)
+    }
+
+
+    move(ele);
+</script>

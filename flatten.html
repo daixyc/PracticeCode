@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>实现复杂数组转一维数组</title>
+    </head>
+    <body>
+        <h3>原数组：</h3>
+        <div class="given"></div>
+        <br>
+        <h3>递归方法实现：</h3>
+        <div class="result"></div>
+        <br>
+        <h3>数组方法实现：</h3>
+        <div class="result2"></div>
+        <br>
+        <h3>ES6方法实现：</h3>
+        <div class="result3"></div>
+    </body>
+</html>
+
+<script>
+    var givenDiv = document.getElementsByClassName('given')[0];
+    var result = document.getElementsByClassName('result')[0];
+    var result2 = document.getElementsByClassName('result2')[0];
+    var result3 = document.getElementsByClassName('result3')[0];
+    var givenArr = [[1, 2, 2], [3, 4, 5, 5], [6, 7, 8, 9, [11, 12, [12, 13, [14]]]], 10];
+    givenDiv.innerText = JSON.stringify(givenArr);
+    console.log(givenArr);
+    console.log(flatten(givenArr));
+    console.log(flatten2(givenArr));
+    console.log(flatten3(givenArr));
+    
+    
+    
+
+    // 这里实现一个方法，用于将一个复杂数组转成扁平化数组
+    // 1、递归
+    function flatten(array) {
+        //参数是复杂数组
+        var resArr = [];
+        for(let i = 0; i < array.length; i++) {
+            if(Array.isArray(array[i])){
+                //如果子元素是数组，就递归
+                resArr = resArr.concat(flatten(array[i]));
+            } else {
+                resArr.push(array[i]);
+            }
+        }
+        return resArr;
+    }
+
+    // 2、数组方法
+    function flatten2(array) {
+        return array.reduce((prev, item) => {
+            return prev.concat(Array.isArray(item) ? flatten2(item) : item);
+        }, [])
+    }
+
+    // 3、ES6方法  ...扩展运算符
+    function flatten3(array) {
+        while(array.some(item => Array.isArray(item))){
+            // 如果还存在数组元素
+            array = [].concat(...array);
+        }
+        return array;
+    }
+
+    Array.prototype.flatten4 = function(array) {
+        let newArray = flatten3(array);
+        newArray = newArray.sort((a, b) => {
+            a - b > 0;
+        });
+        return newArray;
+    }
+
+
+
+
+    setTimeout(() => {
+        result.innerText = JSON.stringify(flatten(givenArr));
+        result2.innerText = JSON.stringify(flatten2(givenArr));
+        result3.innerText = JSON.stringify(flatten3(givenArr));
+    }, 3000);
+</script>
