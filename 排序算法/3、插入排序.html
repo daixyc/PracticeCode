@@ -31,6 +31,23 @@
         }
     }
 
+    function MySort2() {
+        let n = numArr.length
+        for(let i = 1; i < n; i++) {
+            let value = numArr[i];
+            let j = 0;
+            // 这趟遍历是从后往前，数据后移
+            for(j = i - 1; j >= 0; j--){
+                if(numArr[j] > value) {
+                    numArr[j + 1] = numArr[j] // 移动数据
+                } else {
+                    break;
+                }
+            }
+            numArr[j + 1] = value;
+        }
+    }
+
 
     //基本步骤
     var result = document.getElementsByClassName('result')[0];

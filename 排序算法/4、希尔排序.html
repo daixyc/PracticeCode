@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>冒泡排序</title>
+        <title>希尔排序</title>
     </head>
     <body>
         <div class="source"></div>
@@ -14,17 +14,21 @@
 
 <script>
 
-    //冒泡排序过程=> 遍历，依次比较相邻的两个值，最大的在最后
-    /// 时间复杂度 O(n^2)
+    ///希尔排序过程 => 将待排序的数组按增量递减进行分组，然后将不同组的对应元素进行比较
+    /// 增量折半，继续以上步骤
+    /// 时间复杂度 最坏：O(n^2) 
     function MySort() {
-        for(var i = 0; i < numArr.length - 1; i++) {
-            for(var j = 0; j < numArr.length - i - 1; j++){
-                if(numArr[j] > numArr[j + 1]){
-                    let temp = numArr[j];
-                    numArr[j] = numArr[j + 1];
-                    numArr[j + 1] = temp;
-                    //每趟执行完，最大的值在最后，i是标识最后某位置的值不用动
+        for(let gap = Math.floor(numArr.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
+            for(let i = gap; i < numArr.length; i++) {
+                var j = i; 
+                var current = numArr[i];
+                //如果存在组间隔，并且后组元素比前组对应元素小，则交换
+                while(j - gap >= 0 && current < numArr[j - gap]) {
+                    numArr[j] = numArr[j - gap];
+                    //交换完成后，将基准值换为前组对应元素，与更前组比较
+                    j = j - gap;
                 }
+                numArr[j] = current;
             }
         }
     }
@@ -51,7 +55,6 @@
     function MyButFun() {
         MySort();
         result.innerText = numArr.join('->')
-        console.log(aa);
         
     }
 

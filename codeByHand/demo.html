@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页</title>
+</head>
+<body>
+    <label>请输入数组元素（以，分割）：</label><input class="source" type="text" onblur="getResult()">
+</body>
+</html>
+
+<script src="./code.js"></script>
+<script>
+    let source = document.getElementsByClassName('source')[0];
+    getResult2();
+    function getResult()　{
+        let value = source.value;
+        let list = value.split(',');
+        list = unique(list);
+        console.log('list', list); // chen-log
+    }
+    function getResult2() {
+        let array = [4,3,[1,4,3],[6,[3]]];
+        array = flatten(array);
+        console.log('array', array); // chen-log
+    }
+</script>

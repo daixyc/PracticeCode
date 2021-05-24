@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速排序</title>
+</head>
+<body>
+    <div class="source"></div>
+    <br>
+    <div class="result"></div>
+</body>
+</html>
+
+<script>
+
+    /// 快速排序过程 => 选一个基准值，遍历跟基准值比较，大小分两区，再递归的进行
+    /// 时间复杂度：对半分，O(nlogn)
+    function MySort(arr) {
+        let len = arr.length
+        merge_sort(arr, 0, len - 1);
+    }
+    /**
+     * 原始数组、起始位置、截止位置
+    */
+    function merge_sort(arr, start, end) {
+        if(start >= end) {
+            return
+        }
+        // 排序之后，返回基准值的位置
+        let mid = partition2(arr, start, end);
+        // 继续拆分
+        merge_sort(arr, start, mid);
+        merge_sort(arr, mid + 1, end);
+    }
+
+    // 单边扫描：
+    function partition(arr, start, end) {
+        // 选取基准值
+        let pivot = arr[start];
+        // 标记点
+        let mark = start;
+        // 这里的循环不对基准值做变动，只是将值按大小两遍区分，最后一趟之后，[pivot, ...(小), num(mark), ...(大)]
+        // 这里的mark，最后是比基准值小的数，也就是arr[mark]<pivot
+        for(let i = start + 1; i <= end; i++) {
+            if(arr[i] < pivot) {
+                // 小于基准值，将标记点和当前索引值交换
+                mark++;
+                if(mark !== i) {
+                    let temp = arr[mark];
+                    arr[mark] = arr[i];
+                    arr[i] = temp;
+                }
+            }
+        }
+        // 将mark与基准值交换，则小数全部位于原基准值左侧，大数在右侧
+        arr[start] = arr[mark];
+        arr[mark] = pivot;
+        return mark;
+    }
+    // 双边扫描：两个指针前后扫描
+    function partition2(arr, start, end) {
+        // 指针
+        let left = start, right = end;
+        // 选基准值
+        let pivot = arr[left]
+        while(left < right) {
+            // 从右边扫描
+            while(left < right && arr[right] >= pivot) {
+                right--;
+            }
+            arr[left] = arr[right]
+            // 从左边扫描
+            while(left < right && arr[left] <= pivot) {
+                // 一直循环找到比基准值大的数
+                left++;
+            }
+            arr[right] = arr[left]
+        }
+        // 扫描完成，基准到位
+        arr[left] = pivot
+        return left
+    }
+
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort(numArr);
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 1000);
+</script>

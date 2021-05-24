@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>归并排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+<script>
+
+    /// 归并排序过程 => 将待排序的数组一步步拆分，直到拆成最小部分（单个元素），然后再合并，每部分合并时，做排序
+    /// 时间复杂度：对半分，O(nlogn)
+    function MySort(arr) {
+        let len = arr.length
+        let result = [];
+        merge_sort(arr, result, 0, len - 1);
+    }
+    /**
+     * 原始数组、结果数组、起始位置、截止位置
+    */
+    function merge_sort(arr, result, start, end) {
+        if(start >= end) {
+            return
+        }
+        // 计算出每一步拆分的前后两部分的 起止位置
+        let len = end - start;
+        let mid = start + parseInt(len / 2);
+        let start1 = start, end1 = mid; // 左侧部分
+        let start2 = mid + 1, end2 = end; // 右侧部分
+        // 继续拆分，如果不可拆了，会在第一步跳出（start >= end）
+        merge_sort(arr, result, start1, end1);
+        merge_sort(arr, result, start2, end2);
+
+        // 做合并操作，是将拆分的两部分做合并，同级先拿小
+        // 从起始开始遍历，每一个位置都要比较
+        let k = start;
+        while(start1 <= end1 && start2 <= end2) {
+            // 都没有遍历完，就要比较左右两侧，谁小拿谁
+            result[k++] = arr[start1] <= arr[start2] ? arr[start1++] : arr[start2++];
+        } 
+        // 经过第一步while，不存在两边都有数据的情况
+        while(start1 <= end1) {
+            result[k++] = arr[start1++];
+        } 
+        while(start2 <= end2) {
+            result[k++] = arr[start2++];
+        }
+        //将排序好的数据 赋值回原数组
+        for(let i = start; i <= end; i++) {
+            arr[i] = result[i]
+        }
+    }
+
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort(numArr);
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 3000);
+</script>
