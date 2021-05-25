@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>桶排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+<script>
+    /// 桶排序：计数排序的升级版。按照排序数组的大小、数额创建桶空间，对应数据入对应桶，桶内排序后依次取出
+    /// 时间复杂度：数据入桶分布均匀情况下，最好是O(n)，若分布不均，最坏为O(nlogn)，比基于比较的排序方法要快
+    function MySort(arr) {
+        let max = arr[0], min = arr[0];
+        let len = arr.length;
+        for(let i = 0; i < len; i++) {
+            if(max < arr[i]) {
+                max = arr[i]
+            }
+            if(min > arr[i]) {
+                min = arr[i]
+            }
+        }
+
+        // 桶个数,取排序数组长度
+        let bucketNum = len;
+        // 每个桶内数据量，向上取整
+        let bucketSize = Math.ceil((max - min) / bucketNum);
+        // 每个桶都初始化为空数组
+        // fill([])，如果填充引用类型，那么所有引用指向同一地址，变则都变
+        // let bucketList = new Array(bucketNum).fill(new Array());
+        let bucketList = new Array(bucketNum);
+        for(let i = 0; i < bucketList.length; i++) {
+            bucketList[i] = [];
+        }
+        // 数据入桶
+        for(let i = 0; i < len; i++) {
+            // 桶索引，从最小值开始设计桶，所以需要：差值 ÷ 桶大小 - 1（第几个桶 - 1 = 桶索引）
+            let index = parseInt((arr[i] - min) / bucketSize) - 1;
+            index = index < 0 ? 0 : index;
+            bucketList[index].push(arr[i])
+        }
+        console.log('bucketList', bucketList); // chen-log
+
+        // 桶内排序
+        for(let i = 0; i < bucketList.length; i++) {
+            if(bucketList[i].length > 1) {
+                bucketList[i].sort((a, b) => {
+                    return a - b
+                })
+                // MySort(bucketList[i])
+            }
+        }
+        console.log('bucketList', bucketList); // chen-log
+
+        let arrIndex = 0;
+        // 桶内数据出桶
+        for(let i = 0; i < bucketList.length; i++) {
+            for(let item of bucketList[i]) {
+                arr[arrIndex] = item;
+                arrIndex++;
+            }
+        }
+    }
+
+    //基本代码
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join(', ');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort(numArr);
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 0);
+</script>

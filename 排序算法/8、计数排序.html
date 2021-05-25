@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>计数排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+<script>
+    /// 计数排序：创建空数组，以排序数组数据为索引，空数组对应索引++，完成后，再依次取出索引
+    /// 时间复杂度：O(n)，比基于比较的排序方法要快
+    /// 局限性：1、如果要排的数据含非正数，则无法排序；
+    ///      2、如果数据差距大（[1,10，10000]），则创建中间数组不合适
+    function MySort(arr) {
+        // 找数组最大值
+        let max = arr[0];
+        let len = arr.length;
+        for(let i = 0; i < len; i++) {
+            if(max < arr[i]) {
+                max = arr[i];
+            }
+        }
+        // 创建中间数组
+        let countArr = new Array(parseInt(max) + 1).fill(0);
+        // 中间数组赋值
+        for(let i = 0; i < len; i++) {
+            countArr[arr[i]]++;
+            arr[i] = 0;
+        }
+        // 根据中间数组，对原数组赋值结果
+        let index = 0;
+        for(let i = 0; i < countArr.length; i++) {
+            while(countArr[i] > 0) {
+                arr[index++] = i;
+                countArr[i]--;
+            }
+        }
+    }
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort(numArr);
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 3000);
+</script>

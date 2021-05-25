@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>基数排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+<script>
+    /// 基数排序：桶排序类似。正整数排序方案。按个位、十位、百位...的排序顺序入桶
+    /// 例如：手机号排序
+    /// 时间复杂度：O(n)，比基于比较的排序方法要快
+    function MySort(arr) {
+        let max = arr[0];
+        let len = arr.length;
+        // 取最大值
+        for(let i = 0; i < len; i++) {
+            max = Math.max(max, arr[i])
+        }
+        // 需要次数
+        let num = (''+max).length;
+
+        // 创建0-9的桶，用于每个位数上的排序入桶
+        let bucketList = new Array(10);
+        for(let i = 0; i < bucketList.length; i++) {
+            bucketList[i] = []
+        }
+
+        // 当前所在位数倒序索引（个位=0，十位=1,百位=2...）
+        let location = 0;
+        while(num > location) {
+            // 取除数
+            let chushu = Math.pow(10, location)
+            // 排序数组遍历，入桶
+            for(let i = 0; i < len; i++) {
+                // 当前数在当前位数对应的桶索引 => 小数点前移取余法
+                let index = parseInt((arr[i] / chushu) % 10)
+                bucketList[index].push(arr[i])
+            }
+            // 出桶，回填
+            let arrIndex = 0;
+            for(let i = 0; i < bucketList.length; i++) {
+                for(let item of bucketList[i]) {
+                    arr[arrIndex] = item;
+                    arrIndex++;
+                }
+                // 桶清空，用于下趟排序
+                bucketList[i] = []
+            }
+            location++;
+        }
+
+    }
+
+    //基本代码
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join(', ');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort(numArr);
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 0);
+</script>

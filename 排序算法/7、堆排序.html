@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>堆排序</title>
+    </head>
+    <body>
+        <div class="source"></div>
+        <br>
+        <div class="result"></div>
+    </body>
+</html>
+
+<script>
+    /// 堆：一种优先队列（最大堆、最小堆），可以看成是完全二叉树（父节点比子节点大、父节点比子节点小）
+    /// 堆排序过程 => 利用堆的大小特性，进行排序。以下利用最大堆（堆顶是最大值）
+    /// 将待排序数组构建最大堆，取堆顶元素，放到数组最后一位，数组其它位重复构建最大堆，重复以上步骤
+    /// 时间复杂度：O(nlogn)
+    function MySort(arr) {
+        // 构建最大堆
+        buildHeap(arr, arr.length);
+        // 排序
+        merge_sort(arr);
+    }
+
+    function merge_sort(arr) {
+        let len = arr.length;
+        while(len > 0) {
+            let temp = arr[len - 1];
+            arr[len - 1] = arr[0];
+            arr[0] = temp;
+            len = len - 1;
+            sink(arr, 0, len);
+        }
+    }
+
+    function buildHeap(arr, len) {
+        // 由于二叉树的左右结构，将数组折半进行元素下沉
+        for(let i = parseInt(len/2); i >= 0; i--) {
+            sink(arr, i, len)
+        }
+        console.log('arr', arr); // chen-log
+    }
+
+    function sink(arr, i, len) {
+        let left = 2 * i + 1;// 左子树节点(index是索引，所以+1)
+        let right = 2 * i + 2;// 右子树节点
+        let largest = i;// 最大节点默认是当前的根节点
+        if(left < len && arr[left] > arr[largest]) {
+            largest = left;
+        }
+        if(right < len && arr[right] > arr[largest]) {
+            largest = right
+        }
+        if(largest != i) {
+            // 如果需要下沉，将根节点（旧的最大值）和最大值交换
+            let temp = arr[largest]
+            arr[largest] = arr[i]
+            arr[i] = temp
+
+            // 递归进行后续树的下沉
+            sink(arr, largest, len)
+        }
+    }
+    
+
+    //基本步骤
+    var result = document.getElementsByClassName('result')[0];
+    var source = document.getElementsByClassName('source')[0];
+    var numArr = [];
+    function getNumbers() {
+        for(let i = 0; i < 10; i++) {
+            let num = Math.random() * 100;
+            numArr.push(parseInt(num));
+        }
+    }
+
+    function butFun() {
+        getNumbers();
+        source.innerText = numArr.join('，');
+    }
+    butFun();
+
+
+    function MyButFun() {
+        MySort(numArr);
+        result.innerText = numArr.join('->')
+        
+    }
+
+    setTimeout(() => {
+        MyButFun();
+    }, 3000);
+</script>
